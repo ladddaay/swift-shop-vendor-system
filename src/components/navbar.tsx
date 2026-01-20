@@ -24,7 +24,7 @@ function Navbar({ isOpen, setIsOpen }: Props) {
                 </div>
                 <div>
                     <Link to="/product-catelog" className="py-1 ">
-                        Product Category
+                        Product Catalog
                     </Link>
                 </div>
                 <div>
