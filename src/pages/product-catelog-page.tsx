@@ -47,7 +47,7 @@ function ProductCatelogPage() {
                             }
 
                             return (
-                                <div className="border rounded-2xl px-2 py-2 w-[200px]">
+                                <div key={product.id} className="border rounded-2xl px-2 py-2 w-[200px]">
                                     <div className="text-lg font-semibold">
                                         {product.name}
                                     </div>

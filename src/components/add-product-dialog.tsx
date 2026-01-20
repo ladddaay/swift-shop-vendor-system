@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from "zod";
 import type { ProductType } from "../types/product-type";
+import { v4 as uuidv4 } from 'uuid';
 
 type Props = {
     addProductDialog: boolean,
@@ -12,6 +13,7 @@ type Props = {
 }
 
 const AddFormSchema = z.object({
+    id: z.string().min(1, "Id is required"),
     name: z.string().min(1, "The Product name is requred."),
     category: z.string().min(1, "The Product category is requred."),
     price: z.number().min(1, "Product price can not be zero or less"),
@@ -28,6 +30,7 @@ function AddProductDialog({ addProductDialog, setAddProductDialog }: Props) {
         localStorage.setItem("products", JSON.stringify([
             ...prevProducts,
             {
+                id: uuidv4(),
                 name: data.name,
                 category: data.category,
                 price: data.price,
