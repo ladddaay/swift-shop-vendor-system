@@ -5,14 +5,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from "zod";
 import type { ProductType } from "../types/product-type";
-import { v4 as uuidv4 } from 'uuid';
 
 type Props = {
+    product: ProductType | undefined,
     addProductDialog: boolean,
     setAddProductDialog: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const AddFormSchema = z.object({
+const UpdateFormSchema = z.object({
     id: z.string().min(1, "Id is required"),
     name: z.string().min(1, "The Product name is requred."),
     category: z.string().min(1, "The Product category is requred."),
@@ -20,27 +20,38 @@ const AddFormSchema = z.object({
     stockQuontity: z.number().min(1, "Product quontity can not be zero or less")
 })
 
-function AddProductDialog({ addProductDialog, setAddProductDialog }: Props) {
+function EditProductDialog({ product, addProductDialog, setAddProductDialog }: Props) {
+
+    if (!product) {
+        return;
+    }
 
     const form = useForm<ProductType>({
-        resolver: zodResolver(AddFormSchema),
+        resolver: zodResolver(UpdateFormSchema),
         defaultValues: {
-            id: uuidv4(),
+            id: product.id,
+            name: product.name,
+            category: product.category,
+            price: product.price,
+            stockQuontity: product.stockQuontity
         }
     })
 
     const handleSubmit = (data: ProductType) => {
         const prevProducts = JSON.parse(localStorage.getItem("products") ?? "[]") as ProductType[] ?? [];
-        localStorage.setItem("products", JSON.stringify([
-            ...prevProducts,
-            {
-                id: data.id,
-                name: data.name,
-                category: data.category,
-                price: data.price,
-                stockQuontity: data.stockQuontity
+        const newProducts = prevProducts.map(x => {
+            if (x.id === data.id) {
+                return {
+                    id: data.id,
+                    name: data.name,
+                    category: data.category,
+                    price: data.price,
+                    stockQuontity: data.stockQuontity
+                }
             }
-        ]))
+            return x;
+        })
+        localStorage.setItem("products", JSON.stringify(newProducts));
         form.reset();
         setAddProductDialog(false);
     }
@@ -55,7 +66,7 @@ function AddProductDialog({ addProductDialog, setAddProductDialog }: Props) {
             <div className="w-[400px] h-auto py-4 px-4 bg-cyan-700 rounded-2xl ">
                 <form onSubmit={form.handleSubmit(handleSubmit, onInvalid)} className="flex flex-col gap-5">
                     <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-bold">Add a product to catalog</h2>
+                        <h2 className="text-xl font-bold">Update a product</h2>
                         <GhostButton onClick={() => setAddProductDialog(false)}>
                             <X />
                         </GhostButton>
@@ -90,4 +101,4 @@ function AddProductDialog({ addProductDialog, setAddProductDialog }: Props) {
     )
 }
 
-export default AddProductDialog;
+export default EditProductDialog;
